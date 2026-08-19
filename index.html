@@ -15,3 +15,8 @@ again. Everything on the FPGA itself, including the update rule.</p>
 <ul>
 <li><a href="projects/circuits.html">One page per circuit</a><span>The rule assembling adder2, adder4, gf4, mul3 and mul4 from random soft wires — no damage, no golden to restore: the message-passing episode over the real wiring, per-node messages, memory and error, the LUT contents, and where the error gate closes.</span></li>
 </ul>
+
+<h2>Operation under errors</h2>
+<ul>
+<li><a href="projects/adder2/errors.html">adder2 under errors</a><span>All three fault models on one page. Soft errors: one scrambled LUT step by step, recovery against TMR / scrubbing / ECC / genetic repair, every method under a storm. Hard errors: cells frozen at coin flips that reject every write — only the searching methods survive, and the wall past which the task no longer fits the free bits. Parametric drift: dose shifts every gate's analog margin, no bit is ever wrong, scrubbing and ECC are structurally blind — pre-registered, predictions scored against the run.</span></li>
+</ul>
