@@ -11,18 +11,7 @@ meta-learned once offline. At deployment it runs forward passes only: when a cos
 LUT config bits, neighbouring gates negotiate a configuration that computes the target function
 again. Everything on the FPGA itself, including the update rule.</p>
 
-<h2>The pages</h2>
+<h2>Operation without errors</h2>
 <ul>
-<li><a href="viz/index.html">Repair, step by step</a><span>Which LUTs the fault hit, which ones the policy rewrote, accuracy recovering, over a scrubbable 64-step episode.</span></li>
-<li><a href="viz/results_built.html">Training &amp; recovery</a><span>Training curves, recovery vs fault size, exactness, repair dynamics, persistence, reconfiguration cost, does the policy fit on the board.</span></li>
-<li><a href="viz/silicon_built.html">On silicon</a><span>Real yosys/nextpnr placement on the iCE40 tile grid; healthy / damaged / repaired.</span></li>
-<li><a href="viz/baselines_built.html">The classical competition</a><span>The policy vs TMR / scrubbing / ECC / GA repair on recovery, space, energy and latency (<a href="viz/baselines_mul4_built.html">multiplier</a>).</span></li>
+<li><a href="projects/circuits.html">One page per circuit</a><span>The rule assembling adder2, adder4, gf4, mul3 and mul4 from random soft wires — no damage, no golden to restore: the message-passing episode over the real wiring, per-node messages, memory and error, the LUT contents, and where the error gate closes.</span></li>
 </ul>
-
-<h2>Per circuit</h2>
-<ul>
-<li><a href="projects/circuits.html">One page per circuit</a><span>The rule assembling adder2, adder4, gf4, mul3 and mul4 from random soft wires.</span></li>
-<li><a href="projects/index.html">One rule, measured end to end</a><span>Each project is one rule with its own metrics, results page and episode: float and the 8/6/5/4-bit quantisations, and the on-chip measurement.</span></li>
-<li><a href="overall_study/report_built.html">Overall study</a><span>Every method against every circuit, one table.</span></li>
-</ul>
-
