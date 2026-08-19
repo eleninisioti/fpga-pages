@@ -17,6 +17,14 @@ again. Everything on the FPGA itself, including the update rule.</p>
 </ul>
 
 <h2>Operation under errors</h2>
+<p>All three fault models on one page per circuit. Soft errors: one scrambled LUT step by step,
+recovery against TMR / scrubbing / ECC / genetic repair, every method under a storm. Hard errors:
+cells frozen at coin flips that reject every write — only the searching methods survive, and the
+wall past which the task no longer fits the free bits. Parametric drift: dose shifts every gate's
+analog margin, no bit is ever wrong, scrubbing and ECC are structurally blind — pre-registered,
+predictions scored against the run.</p>
 <ul>
-<li><a href="projects/adder2/errors.html">adder2 under errors</a><span>All three fault models on one page. Soft errors: one scrambled LUT step by step, recovery against TMR / scrubbing / ECC / genetic repair, every method under a storm. Hard errors: cells frozen at coin flips that reject every write — only the searching methods survive, and the wall past which the task no longer fits the free bits. Parametric drift: dose shifts every gate's analog margin, no bit is ever wrong, scrubbing and ECC are structurally blind — pre-registered, predictions scored against the run.</span></li>
+<li><a href="projects/adder2/errors.html">adder2 under errors</a><span>60 gates, the 898-parameter rule: repairs 40 scrambled gates exactly on the circuit it grew.</span></li>
+<li><a href="projects/adder4/errors.html">adder4 under errors</a><span>264 gates, the 63k-parameter rule against the storm knee the scale question cares about.</span></li>
+<li><a href="projects/mul3/errors.html">mul3 under errors</a><span>360 gates, the multiplier — where the host GA collapsed on soft errors and the fabric GA did not.</span></li>
 </ul>
