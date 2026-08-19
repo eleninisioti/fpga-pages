@@ -1,0 +1,119 @@
+<title>Run Index</title>
+<style>
+  :root {
+    --ground:#F4F6F8; --surface:#FFFFFF; --line:#DCE1E7; --line-soft:#E8ECF0;
+    --ink:#161A20; --ink-2:#454E5B; --muted:#6E7885; --accent:#10797F;
+    --ok:#0f766e; --bad:#CF2C58;
+    --shadow:0 1px 2px rgba(16,26,40,.06), 0 8px 24px rgba(16,26,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#0E1116; --surface:#161A21; --line:#262D37; --line-soft:#1E242C;
+      --ink:#E4E9F0; --ink-2:#B3BCC9; --muted:#8590A0; --accent:#3FC3C9;
+      --ok:#3fb692; --bad:#f2557f;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0E1116; --surface:#161A21; --line:#262D37; --line-soft:#1E242C;
+    --ink:#E4E9F0; --ink-2:#B3BCC9; --muted:#8590A0; --accent:#3FC3C9;
+    --ok:#3fb692; --bad:#f2557f;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+  }
+  :root { --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+          --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+         font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1180px; margin:0 auto; padding:32px 24px 64px; }
+  .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+             text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1 { font-family:var(--mono); font-size:clamp(22px,3.2vw,31px); font-weight:600;
+       letter-spacing:-.02em; margin:6px 0 8px; }
+  .lede { margin:0 0 22px; max-width:70ch; color:var(--ink-2); }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:6px;
+          box-shadow:var(--shadow); overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:12.5px;
+          font-variant-numeric:tabular-nums; }
+  th, td { text-align:right; padding:9px 12px; border-bottom:1px solid var(--line-soft);
+           white-space:nowrap; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:10.5px; letter-spacing:.08em;
+       text-transform:uppercase; }
+  tbody tr:hover { background:var(--line-soft); }
+  a { color:var(--accent); text-decoration:none; font-weight:600; }
+  a:hover { text-decoration:underline; }
+  .ok { color:var(--ok); } .bad { color:var(--bad); }
+  .empty { padding:26px; color:var(--muted); font-family:var(--mono); font-size:13px; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Self-organising digital circuits</div>
+  <h1>Run index</h1>
+  <p class="lede">
+    One page per training run, newest first. Every figure is measured on the deployed
+    Boolean function. <b>repaired</b> and <b>exact</b> are at 20 scrambled gates;
+    <b>persist</b> is accuracy after a long undamaged rollout, which is where a rule
+    with no stopping condition gives itself away.
+  </p>
+  <div class="card" id="host"></div>
+</div>
+
+<script id="runs" type="application/json">[{"name": "dlca-mask-d20", "mtime": 1786555499.158394, "task": "adder4", "ruleGates": 2496, "ruleDepth": 20, "ruleKB": 4.88, "repaired": 0.5120117664337158, "exact": 0.0, "persist": 0.5218750238418579, "persistOff": 1063, "config": {"layers": [128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 64], "steps": [16], "damage_gates": 20, "damage_at": [6, 26], "iters": 1, "mem": 16, "node_id": 9, "pretrain": 8000, "write_penalty": 0.0, "state_loss": false, "pos_weight": 1.0}}, {"name": "dlca-nocfg-d20", "mtime": 1786555180.0083826, "task": "adder4", "ruleGates": 2496, "ruleDepth": 20, "ruleKB": 4.88, "repaired": 0.504687488079071, "exact": 0.0, "persist": 0.49140626192092896, "persistOff": 1563, "config": {"layers": [128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128, 64], "steps": [16], "damage_gates": 20, "damage_at": [6, 26], "iters": 1, "mem": 16, "node_id": 9, "pretrain": 6000, "write_penalty": 0.0, "state_loss": false, "pos_weight": 1.0}}, {"name": "baseline-4layer", "mtime": 1786552888.312269, "task": "adder4", "ruleGates": 2432, "ruleDepth": 4, "ruleKB": 4.75, "repaired": 0.8763672113418579, "exact": 0.0, "persist": 0.948437511920929, "persistOff": 49, "config": {"layers": [1024, 768, 512, 128], "steps": [16], "damage_gates": 20, "damage_at": [6, 26], "iters": 1, "mem": 16, "node_id": 9, "pretrain": 12000, "write_penalty": 0.002, "state_loss": null, "pos_weight": 8.0}}]</script>
+<script>
+(function () {
+  "use strict";
+  var R = JSON.parse(document.getElementById("runs").textContent);
+  var host = document.getElementById("host");
+  if (!R.length) {
+    host.innerHTML = '<div class="empty">No runs yet. ' +
+      'Build one with <b>uv run python -m soc.project runs/&lt;run&gt;.pkl</b>.</div>';
+    return;
+  }
+  function fmt(v, n) { return v === null || v === undefined ? "—" : Number(v).toFixed(n); }
+  function pct(v) { return v === null || v === undefined ? "—" : (100 * v).toFixed(0) + "%"; }
+
+  var head = ["run", "rule", "depth", "size", "repaired @20", "exact", "persist",
+              "off golden", "config"];
+  var t = document.createElement("table");
+  var thead = document.createElement("thead"), tr = document.createElement("tr");
+  head.forEach(function (x) {
+    var th = document.createElement("th"); th.textContent = x; tr.appendChild(th);
+  });
+  thead.appendChild(tr); t.appendChild(thead);
+
+  var tb = document.createElement("tbody");
+  R.forEach(function (r) {
+    var row = document.createElement("tr");
+    var c = r.config || {};
+    var cells = [
+      null,
+      r.ruleGates + " LUT4",
+      r.ruleDepth,
+      r.ruleKB + " KB",
+      fmt(r.repaired, 4),
+      pct(r.exact),
+      fmt(r.persist, 6),
+      r.persistOff === null ? "—" : r.persistOff,
+      "id" + c.node_id + " mem" + c.mem + (c.pretrain ? " warm" + c.pretrain : "")
+    ];
+    cells.forEach(function (x, i) {
+      var td = document.createElement("td");
+      if (i === 0) {
+        var a = document.createElement("a");
+        a.href = r.name + "/index.html"; a.textContent = r.name;
+        td.appendChild(a);
+      } else {
+        td.textContent = x;
+        // persistence is pass/fail: an undamaged circuit must stay exact
+        if (i === 6 && r.persist !== null) td.className = r.persist === 1 ? "ok" : "bad";
+        if (i === 7 && r.persistOff !== null) td.className = r.persistOff === 0 ? "ok" : "bad";
+      }
+      row.appendChild(td);
+    });
+    tb.appendChild(row);
+  });
+  t.appendChild(tb);
+  host.appendChild(t);
+})();
+</script>

@@ -1,0 +1,329 @@
+<title>Run · baseline-4layer</title>
+<style>
+  :root {
+    --ground:#F4F6F8; --surface:#FFFFFF; --sunken:#EDF0F3; --line:#DCE1E7;
+    --line-soft:#E8ECF0; --ink:#161A20; --ink-2:#454E5B; --muted:#6E7885;
+    --accent:#10797F; --accent-s:#E0F0F1; --grid:#E8ECF0;
+    --s1:#2a78d6; --s2:#c2410c; --s3:#0f766e; --s4:#7c3aed;
+    --damage:#CF2C58; --ok:#0f766e;
+    --shadow:0 1px 2px rgba(16,26,40,.06), 0 8px 24px rgba(16,26,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#0E1116; --surface:#161A21; --sunken:#10141A; --line:#262D37;
+      --line-soft:#1E242C; --ink:#E4E9F0; --ink-2:#B3BCC9; --muted:#8590A0;
+      --accent:#3FC3C9; --accent-s:#103336; --grid:#222A34;
+      --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#a78bfa;
+      --damage:#f2557f; --ok:#3fb692;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0E1116; --surface:#161A21; --sunken:#10141A; --line:#262D37;
+    --line-soft:#1E242C; --ink:#E4E9F0; --ink-2:#B3BCC9; --muted:#8590A0;
+    --accent:#3FC3C9; --accent-s:#103336; --grid:#222A34;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#a78bfa;
+    --damage:#f2557f; --ok:#3fb692;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+  }
+  :root { --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+          --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+         font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1180px; margin:0 auto; padding:32px 24px 64px; }
+  .nav { font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+         text-transform:uppercase; margin-bottom:18px; }
+  .nav a { color:var(--muted); text-decoration:none; }
+  .nav a:hover { color:var(--ink); }
+  .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+             text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1 { font-family:var(--mono); font-size:clamp(22px,3.2vw,31px); font-weight:600;
+       letter-spacing:-.02em; margin:6px 0 8px; }
+  h2 { font-family:var(--mono); font-size:14px; font-weight:600; margin:0 0 2px;
+       letter-spacing:-.01em; }
+  .lede { margin:0; max-width:70ch; color:var(--ink-2); }
+  .lede b { color:var(--ink); font-weight:600; }
+  .readouts { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line);
+              border:1px solid var(--line); border-radius:6px; overflow:hidden; margin:20px 0 6px; }
+  .stat { background:var(--surface); padding:12px 14px; display:flex; flex-direction:column; gap:2px; }
+  .stat .k { font-family:var(--mono); font-size:10px; letter-spacing:.1em;
+             text-transform:uppercase; color:var(--muted); }
+  .stat .v { font-family:var(--mono); font-size:21px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .stat .sub { font-family:var(--mono); font-size:11px; color:var(--muted); }
+  .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px;
+          align-items:start; margin-top:22px; }
+  .grid .wide { grid-column:1/-1; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:6px;
+          padding:16px 18px 12px; box-shadow:var(--shadow); }
+  .card p { color:var(--ink-2); font-size:13.5px; margin:6px 0 10px; }
+  .card p b { color:var(--ink); }
+  .num { font-family:var(--mono); font-weight:600; color:var(--ink); }
+  table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:12px;
+          font-variant-numeric:tabular-nums; }
+  th, td { text-align:right; padding:5px 8px; border-bottom:1px solid var(--line-soft); }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--muted); font-weight:600; font-size:10.5px; letter-spacing:.08em;
+       text-transform:uppercase; }
+  .legend { display:flex; flex-wrap:wrap; gap:14px; font-family:var(--mono); font-size:11px;
+            color:var(--muted); margin:2px 0 8px; }
+  .legend span { display:inline-flex; align-items:center; gap:5px; }
+  .swatch { width:11px; height:3px; border-radius:2px; display:inline-block; }
+  .foot { margin-top:26px; color:var(--muted); font-size:12.5px; font-family:var(--mono); }
+  svg { display:block; width:100%; height:auto; overflow:visible; }
+</style>
+
+<div class="wrap">
+  <div class="nav"><a href="../index.html">&larr; all runs</a></div>
+  <header>
+    <div class="eyebrow">Self-organising digital circuits · run report</div>
+    <h1 id="title">baseline-4layer</h1>
+    <p class="lede" id="lede"></p>
+  </header>
+
+  <div class="readouts" id="readouts"></div>
+  <div class="foot" id="cfgline"></div>
+
+  <div class="grid" id="charts"></div>
+</div>
+
+<script id="run" type="application/json">{"overhead": {"baselineLuts": 264, "cfgFlops": 4224, "memFlops": 8704, "ruleLuts": 2432, "stateFlops": 12928, "logicRatio": 10.2, "featureBits": 140, "msgBitsPerStep": 42432, "stepsPerSecond": 91911.8, "msgBitsPerSecond": 3900000000.0, "quiescentWrites": 311.0, "perEvent": [{"nHit": 5, "cfgWrites": 156.75, "msgBits": 678912, "totalBits": 679068.75}, {"nHit": 20, "cfgWrites": 288.75, "msgBits": 678912, "totalBits": 679200.75}], "mhz": 25.0}, "task": "adder4", "config": {"layers": [1024, 768, 512, 128], "steps": [16], "damage_gates": 20, "damage_at": [6, 26], "iters": 1, "mem": 16, "node_id": 9, "pretrain": 12000, "write_penalty": 0.002, "state_loss": null, "pos_weight": 8.0}, "arch": {"gates": 264, "nodes": 272, "cfgBits": 4224, "memBits": 4352, "ruleGates": 2432, "ruleDepth": 4, "ruleBits": 38912, "ruleKB": 4.75, "features": 140, "cyclesPerStep": 272, "usPerStep": 10.9, "selBits": 9, "floatParams": 243378, "floatKB": 238}, "training": [[0, 0.87824, 16, 0.91875, 257.0, null]], "recovery": [{"nHit": 5, "pctCircuit": 1.9, "damaged": 0.9724609851837158, "repaired": 0.926953136920929, "exact": 0.0, "goldenStart": 0.9810606241226196, "goldenEnd": 0.8892046213150024, "writes": 156.75, "curve": [0.97246, 0.92617, 0.92246, 0.91758, 0.92695, 0.91953, 0.92695, 0.91953, 0.92695, 0.91953, 0.92695, 0.91953, 0.92695, 0.91953, 0.92695, 0.91953, 0.92695], "curveLo": [0.95859, 0.91172, 0.91328, 0.91094, 0.91563, 0.91094, 0.91563, 0.91094, 0.91563, 0.91094, 0.91563, 0.91094, 0.91563, 0.91094, 0.91563, 0.91094, 0.91563], "curveHi": [0.99844, 0.94219, 0.94766, 0.93516, 0.94688, 0.93516, 0.94688, 0.93516, 0.94688, 0.93516, 0.94688, 0.93516, 0.94688, 0.93516, 0.94688, 0.93516, 0.94688], "goldenCurve": [0.98106, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892, 0.8892]}, {"nHit": 20, "pctCircuit": 7.6, "damaged": 0.8835937976837158, "repaired": 0.8763672113418579, "exact": 0.0, "goldenStart": 0.9242424368858337, "goldenEnd": 0.8371212482452393, "writes": 288.75, "curve": [0.88359, 0.8709, 0.87305, 0.86895, 0.87187, 0.87051, 0.87637, 0.87051, 0.87637, 0.87051, 0.87637, 0.87051, 0.87637, 0.87051, 0.87637, 0.87051, 0.87637], "curveLo": [0.83359, 0.85547, 0.85859, 0.85625, 0.85938, 0.85625, 0.85938, 0.85625, 0.85938, 0.85625, 0.85938, 0.85625, 0.85938, 0.85625, 0.85938, 0.85625, 0.85938], "curveHi": [0.93437, 0.88984, 0.89219, 0.87891, 0.87891, 0.87891, 0.89297, 0.87891, 0.89297, 0.87891, 0.89297, 0.87891, 0.89297, 0.87891, 0.89297, 0.87891, 0.89297], "goldenCurve": [0.92424, 0.83617, 0.83617, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712, 0.83712]}], "persistence": {"marks": [{"step": 1, "acc": 0.9437500238418579, "offGolden": 35, "writes": 35.0}, {"step": 16, "acc": 0.948437511920929, "offGolden": 49, "writes": 119.0}, {"step": 64, "acc": 0.948437511920929, "offGolden": 49, "writes": 311.0}], "horizon": 64}, "steps": 16, "trials": 4}</script>
+<script>
+(function () {
+  "use strict";
+  var M = JSON.parse(document.getElementById("run").textContent);
+  var NS = "http://www.w3.org/2000/svg";
+
+  function h(tag, cls, txt) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (txt !== undefined) e.textContent = txt;
+    return e;
+  }
+  function s(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function fmt(v, n) { return v === null || v === undefined ? "—" : Number(v).toFixed(n); }
+  function pct(v) { return v === null || v === undefined ? "—" : (100 * v).toFixed(1) + "%"; }
+  function human(v) {
+    if (v === null || v === undefined) return "—";
+    if (v >= 1e9) return (v / 1e9).toFixed(1) + "G";
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + "M";
+    if (v >= 1e3) return (v / 1e3).toFixed(1) + "k";
+    return String(Math.round(v));
+  }
+
+  // ---- a small multi-series line chart -------------------------------------
+  function lineChart(host, cfg) {
+    var W = 560, H = cfg.height || 210, P = { l: 46, r: 14, t: 10, b: 28 };
+    var series = cfg.series.filter(function (q) { return q.data && q.data.length; });
+    if (!series.length) { host.appendChild(h("p", null, "no data")); return; }
+    var xs = [], ys = [];
+    series.forEach(function (q) {
+      q.data.forEach(function (p) { xs.push(p[0]); ys.push(p[1]); });
+    });
+    var x0 = cfg.x0 !== undefined ? cfg.x0 : Math.min.apply(null, xs);
+    var x1 = Math.max.apply(null, xs);
+    var y0 = cfg.y0 !== undefined ? cfg.y0 : Math.min.apply(null, ys);
+    var y1 = cfg.y1 !== undefined ? cfg.y1 : Math.max.apply(null, ys);
+    if (y1 === y0) y1 = y0 + 1;
+    if (x1 === x0) x1 = x0 + 1;
+    var sx = function (v) { return P.l + (v - x0) / (x1 - x0) * (W - P.l - P.r); };
+    var sy = function (v) { return H - P.b - (v - y0) / (y1 - y0) * (H - P.t - P.b); };
+
+    var svg = s("svg", { viewBox: "0 0 " + W + " " + H, role: "img" });
+    for (var i = 0; i <= 4; i++) {
+      var yv = y0 + (y1 - y0) * i / 4;
+      svg.appendChild(s("line", { x1: P.l, x2: W - P.r, y1: sy(yv), y2: sy(yv),
+                                  stroke: "var(--grid)", "stroke-width": 1 }));
+      var t = s("text", { x: P.l - 8, y: sy(yv) + 3.5, "text-anchor": "end",
+                          fill: "var(--muted)", "font-size": 10,
+                          "font-family": "var(--mono)" });
+      t.textContent = cfg.fmtY ? cfg.fmtY(yv) : fmt(yv, 2);
+      svg.appendChild(t);
+    }
+    [x0, (x0 + x1) / 2, x1].forEach(function (xv) {
+      var t = s("text", { x: sx(xv), y: H - 9, "text-anchor": "middle",
+                          fill: "var(--muted)", "font-size": 10,
+                          "font-family": "var(--mono)" });
+      t.textContent = cfg.fmtX ? cfg.fmtX(xv) : Math.round(xv);
+      svg.appendChild(t);
+    });
+    if (cfg.xlabel) {
+      var xl = s("text", { x: (P.l + W - P.r) / 2, y: H + 12, "text-anchor": "middle",
+                           fill: "var(--muted)", "font-size": 10, "font-family": "var(--mono)" });
+      xl.textContent = cfg.xlabel; svg.appendChild(xl);
+    }
+    series.forEach(function (q) {
+      var d = q.data.map(function (p, i) {
+        return (i ? "L" : "M") + sx(p[0]).toFixed(1) + " " + sy(p[1]).toFixed(1);
+      }).join(" ");
+      svg.appendChild(s("path", { d: d, fill: "none", stroke: q.color,
+                                  "stroke-width": q.width || 1.8,
+                                  "stroke-dasharray": q.dash || "",
+                                  "stroke-linejoin": "round", "stroke-linecap": "round" }));
+    });
+    host.appendChild(svg);
+    var leg = h("div", "legend");
+    series.forEach(function (q) {
+      var sp = h("span");
+      var sw = h("i", "swatch"); sw.style.background = q.color;
+      sp.appendChild(sw); sp.appendChild(document.createTextNode(q.name));
+      leg.appendChild(sp);
+    });
+    host.appendChild(leg);
+  }
+
+  function card(title, note, wide) {
+    var c = h("div", "card" + (wide ? " wide" : ""));
+    c.appendChild(h("h2", null, title));
+    if (note) { var p = h("p"); p.innerHTML = note; c.appendChild(p); }
+    document.getElementById("charts").appendChild(c);
+    return c;
+  }
+
+  function table(head, rows) {
+    var t = h("table"), thead = h("thead"), tr = h("tr");
+    head.forEach(function (x) { tr.appendChild(h("th", null, x)); });
+    thead.appendChild(tr); t.appendChild(thead);
+    var tb = h("tbody");
+    rows.forEach(function (r) {
+      var row = h("tr");
+      r.forEach(function (x) { row.appendChild(h("td", null, x)); });
+      tb.appendChild(row);
+    });
+    t.appendChild(tb); return t;
+  }
+
+  // ---- header --------------------------------------------------------------
+  var A = M.arch, O = M.overhead;
+  var mid = M.recovery.filter(function (r) { return r.nHit === 20; })[0] || M.recovery[0] || {};
+  var pers = M.persistence.marks[M.persistence.marks.length - 1] || {};
+
+  document.getElementById("lede").innerHTML =
+    "A Boolean update rule of <b>" + A.ruleGates + " LUT4 gates</b> in <b>" + A.ruleDepth +
+    " layers</b> maintaining a " + A.gates + "-gate " + M.task + ". Every number here is " +
+    "measured on the <b>deployed</b> Boolean function — the same one <code>soc.cosim</code> " +
+    "diffs against iverilog — so nothing is a soft approximation.";
+
+  [["repaired @20", pct(mid.repaired), "from " + fmt(mid.damaged, 4)],
+   ["fully exact", pct(mid.exact), M.trials + " trials"],
+   ["persistence", fmt(pers.acc, 6), pers.offGolden + " bits off golden"],
+   ["rule size", A.ruleKB + " KB", A.ruleGates + " LUT4, 0 DSP"]
+  ].forEach(function (r) {
+    var d = h("div", "stat");
+    d.appendChild(h("div", "k", r[0]));
+    d.appendChild(h("div", "v", r[1]));
+    d.appendChild(h("div", "sub", r[2]));
+    document.getElementById("readouts").appendChild(d);
+  });
+
+  var c = M.config || {};
+  document.getElementById("cfgline").textContent =
+    "layers " + JSON.stringify(c.layers) + " · mem " + c.mem + "b · node-id " + c.node_id +
+    " · horizons " + JSON.stringify(c.steps) + " · damage " + c.damage_gates +
+    " gates at " + JSON.stringify(c.damage_at) + " · " + c.iters + " iters" +
+    (c.pretrain ? " (+" + c.pretrain + " warm start)" : "") +
+    (c.state_loss ? " · STATE LOSS (capacity probe, not the real objective)" : "");
+
+  // ---- training ------------------------------------------------------------
+  if (M.training && M.training.length) {
+    var cc = card("Meta-training",
+      "Loss is the deployed rollout's error, not a soft proxy. <b>golden</b> is the " +
+      "fraction of gates whose configuration is exactly the original — the metric that " +
+      "catches a rule that improves the output while walking the circuit somewhere else.");
+    lineChart(cc, {
+      x0: 0, y0: 0, y1: 1, xlabel: "iteration",
+      fmtY: function (v) { return v.toFixed(2); },
+      series: [
+        { name: "train loss", color: "var(--s2)",
+          data: M.training.map(function (r) { return [r[0], r[1]]; }) },
+        { name: "hard accuracy", color: "var(--s1)",
+          data: M.training.map(function (r) { return [r[0], r[3]]; }) },
+        { name: "gates at golden", color: "var(--s3)",
+          data: M.training.filter(function (r) { return r[5] !== null; })
+                          .map(function (r) { return [r[0], r[5]]; }) }
+      ]
+    });
+  }
+
+  // ---- recovery ------------------------------------------------------------
+  if (M.recovery.length) {
+    var rc = card("Recovery against fault size",
+      "Accuracy over " + M.steps + " repair steps, mean of " + M.trials +
+      " trials. Damage lands at step 0.");
+    var cols = ["var(--s1)", "var(--s3)", "var(--s2)", "var(--damage)"];
+    lineChart(rc, {
+      x0: 0, y0: 0.4, y1: 1.0, xlabel: "repair step",
+      fmtY: function (v) { return v.toFixed(2); },
+      series: M.recovery.map(function (r, i) {
+        return { name: r.nHit + " gates (" + r.pctCircuit + "%)", color: cols[i % 4],
+                 data: r.curve.map(function (v, t) { return [t, v]; }) };
+      })
+    });
+    rc.appendChild(table(
+      ["hit", "% circ", "damaged", "repaired", "exact", "at golden", "LUT-bit writes"],
+      M.recovery.map(function (r) {
+        return [r.nHit, r.pctCircuit + "%", fmt(r.damaged, 4), fmt(r.repaired, 4),
+                pct(r.exact), pct(r.goldenEnd), Math.round(r.writes)];
+      })));
+  }
+
+  // ---- persistence ---------------------------------------------------------
+  var pc = card("Persistence with no damage at all",
+    "The quiet-sky case, and the one that catches a rule with no stopping condition: " +
+    "left running on an undamaged circuit, does it hold still or slowly eat what it is " +
+    "protecting?");
+  pc.appendChild(table(["after", "accuracy", "bits off golden", "cumulative writes"],
+    M.persistence.marks.map(function (m) {
+      return [m.step + " steps", fmt(m.acc, 6), m.offGolden, Math.round(m.writes)];
+    })));
+
+  // ---- deployment overhead -------------------------------------------------
+  var oc = card("What fault tolerance costs at deployment", null, true);
+  var op = h("p");
+  op.innerHTML =
+    "The baseline is the circuit as <code>soc.verilog</code> ships it: <span class='num'>" +
+    O.baselineLuts + "</span> constant LUT4s and <b>no state whatsoever</b>. Everything " +
+    "below exists only so the circuit can repair itself. Configuration flip-flops are the " +
+    "price of a writable LUT and any runtime scheme pays them; the message state and the " +
+    "rule are what this approach costs on top of a plain scrubber.";
+  oc.insertBefore(op, oc.children[1] || null);
+
+  oc.appendChild(table(["", "cost", "note"], [
+    ["configuration storage", O.cfgFlops + " flip-flops",
+     "16 per gate — a writable LUT cannot be a fabric constant"],
+    ["message state", O.memFlops + " flip-flops",
+     A.nodes + " nodes x " + c.mem + " bits, double-buffered"],
+    ["update rule", O.ruleLuts + " LUT4", A.ruleKB + " KB of LUT contents, no weight RAM"],
+    ["multipliers / block RAM", "0 / 0", "the whole argument for a Boolean rule"],
+    ["logic vs bare circuit", O.logicRatio + "x", "rule + substrate against " + O.baselineLuts + " LUT4"]
+  ]));
+
+  var bp = h("p");
+  bp.innerHTML =
+    "<b>Bandwidth.</b> The engine sweeps one node per cycle and moves that node's feature " +
+    "bus in and its message word out, so a step costs <span class='num'>" +
+    human(O.msgBitsPerStep) + "</span> bits (" + A.nodes + " nodes x " +
+    (O.featureBits + c.mem) + " bits) whether or not anything is wrong. At " + O.mhz +
+    " MHz that is <span class='num'>" + human(O.stepsPerSecond) + "</span> steps/s and " +
+    "<span class='num'>" + human(O.msgBitsPerSecond) + "</span> bits/s of standing traffic — " +
+    "the cost of being ready. Configuration writes sit on top and are the only part that " +
+    "scales with damage.";
+  oc.appendChild(bp);
+  oc.appendChild(table(["fault size", "config-bit writes", "message bits moved", "total"],
+    O.perEvent.map(function (r) {
+      return [r.nHit + " gates", Math.round(r.cfgWrites), human(r.msgBits), human(r.totalBits)];
+    })));
+
+  var qp = h("p");
+  qp.innerHTML = "Over " + M.persistence.horizon + " undamaged steps the rule wrote " +
+    "<span class='num'>" + Math.round(O.quiescentWrites) + "</span> configuration bits" +
+    (O.quiescentWrites === 0
+      ? " — <b>exactly zero</b>, so on a quiet sky the only cost is the message traffic above."
+      : ", which is drift and should be zero.");
+  oc.appendChild(qp);
+})();
+</script>

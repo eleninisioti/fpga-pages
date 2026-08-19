@@ -1,0 +1,28 @@
+<!doctype html><meta charset=utf-8><title>Self-organising digital circuits</title>
+<style>
+body{background:#0d1117;color:#e6edf3;font:15px/1.6 system-ui;padding:40px;max-width:760px;margin:0 auto}
+a{color:#58a6ff;font-weight:600}li{margin:.5rem 0}span{display:block;color:#8b949e;font-size:.85rem}
+h1{font-size:1.4rem;margin-bottom:.2rem}h2{font-size:1rem;margin:2rem 0 .4rem;color:#e6edf3}
+p{color:#8b949e;font-size:.9rem}ul{padding-left:1.2rem}code{color:#e6edf3;font-size:.85em}
+</style>
+<h1>Self-organising digital circuits — JAX to FPGA</h1>
+<p>A circuit is a layered DAG of differentiable LUTs, configured by a local message-passing rule
+meta-learned once offline. At deployment it runs forward passes only: when a cosmic ray scrambles
+LUT config bits, neighbouring gates negotiate a configuration that computes the target function
+again. Everything on the FPGA itself, including the update rule.</p>
+
+<h2>The pages</h2>
+<ul>
+<li><a href="viz/index.html">Repair, step by step</a><span>Which LUTs the fault hit, which ones the policy rewrote, accuracy recovering, over a scrubbable 64-step episode.</span></li>
+<li><a href="viz/results_built.html">Training &amp; recovery</a><span>Training curves, recovery vs fault size, exactness, repair dynamics, persistence, reconfiguration cost, does the policy fit on the board.</span></li>
+<li><a href="viz/silicon_built.html">On silicon</a><span>Real yosys/nextpnr placement on the iCE40 tile grid; healthy / damaged / repaired.</span></li>
+<li><a href="viz/baselines_built.html">The classical competition</a><span>The policy vs TMR / scrubbing / ECC / GA repair on recovery, space, energy and latency (<a href="viz/baselines_mul4_built.html">multiplier</a>).</span></li>
+</ul>
+
+<h2>Per circuit</h2>
+<ul>
+<li><a href="projects/circuits.html">One page per circuit</a><span>The rule assembling adder2, adder4, gf4, mul3 and mul4 from random soft wires.</span></li>
+<li><a href="projects/index.html">One rule, measured end to end</a><span>Each project is one rule with its own metrics, results page and episode: float and the 8/6/5/4-bit quantisations, and the on-chip measurement.</span></li>
+<li><a href="overall_study/report_built.html">Overall study</a><span>Every method against every circuit, one table.</span></li>
+</ul>
+

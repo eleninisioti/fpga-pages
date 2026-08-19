@@ -1,0 +1,326 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>on-chip: the deployed rule</title>
+<style>
+  :root {
+    --ground:#F4F6F8; --surface:#FFFFFF; --line:#DCE1E7; --line-soft:#E8ECF0;
+    --ink:#161A20; --ink-2:#454E5B; --muted:#6E7885; --accent:#10797F;
+    --ok:#0f766e; --bad:#CF2C58;
+    --shadow:0 1px 2px rgba(16,26,40,.06), 0 8px 24px rgba(16,26,40,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:#0E1116; --surface:#161A21; --line:#262D37; --line-soft:#1E242C;
+      --ink:#E4E9F0; --ink-2:#B3BCC9; --muted:#8590A0; --accent:#3FC3C9;
+      --ok:#3fb692; --bad:#f2557f;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:#0E1116; --surface:#161A21; --line:#262D37; --line-soft:#1E242C;
+    --ink:#E4E9F0; --ink-2:#B3BCC9; --muted:#8590A0; --accent:#3FC3C9;
+    --ok:#3fb692; --bad:#f2557f;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.32);
+  }
+  :root { --mono: ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+          --sans: system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);
+         font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  .wrap { max-width:1100px; margin:0 auto; padding:32px 24px 64px; }
+  .eyebrow { font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+             text-transform:uppercase; color:var(--accent); font-weight:600; }
+  h1 { font-family:var(--mono); font-size:clamp(22px,3.2vw,31px); font-weight:600;
+       letter-spacing:-.02em; margin:6px 0 8px; }
+  h2 { font-family:var(--mono); font-size:16px; font-weight:600; margin:34px 0 6px; }
+  .lede { margin:0 0 10px; max-width:76ch; color:var(--ink-2); }
+  .note { font-size:13px; color:var(--muted); max-width:76ch; }
+  a { color:var(--accent); }
+  .heroes { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+            gap:10px; margin:20px 0 6px; }
+  .hero { background:var(--surface); border:1px solid var(--line); border-radius:6px;
+          box-shadow:var(--shadow); padding:14px 16px; }
+  .hero .v { font-family:var(--mono); font-size:24px; font-weight:600; letter-spacing:-.02em; }
+  .hero .k { font-size:12px; color:var(--muted); margin-top:2px; }
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:6px;
+          box-shadow:var(--shadow); overflow-x:auto; margin-top:8px; }
+  .card .pad { padding:14px 16px; }
+  table { width:100%; border-collapse:collapse; font-family:var(--mono); font-size:12.5px;
+          font-variant-numeric:tabular-nums; }
+  th, td { text-align:right; padding:8px 12px; border-bottom:1px solid var(--line-soft);
+           white-space:nowrap; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--muted); font-weight:500; }
+  tr:last-child td { border-bottom:0; }
+  .ok { color:var(--ok); font-weight:600; }
+  svg text { font-family:var(--mono); font-size:11px; fill:var(--muted); }
+  .board { position:relative; height:600px; overflow:hidden; cursor:grab;
+           background:var(--surface); border-radius:0 0 6px 6px; }
+  .board canvas { position:absolute; inset:0; }
+  .board.grabbing { cursor:grabbing; }
+  .sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
+  .tip { position:absolute; pointer-events:none; background:var(--surface);
+         border:1px solid var(--line); border-radius:4px; box-shadow:var(--shadow);
+         font-family:var(--mono); font-size:12px; padding:5px 8px; display:none; }
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">projects / on-chip</div>
+  <h1>The deployed rule, measured on the FPGA</h1>
+  <p class="lede">
+    The <a href="../quant-8bit/index.html">quant-8bit</a> policy — same file, same
+    62,306 weights — compiled to a complete ULX3S design and measured where it will
+    run: RTL simulation of the actual bitstream sources, cycle for cycle, with the
+    substrate evaluating itself, the error counters sensing, and the rule repairing.
+    Every state byte is checked against the integer model at every step; agreement
+    is exact, so the model's statistics are the chip's.
+  </p>
+  <p class="note">
+    Sources: <code>soc.qcosim --episode --steps 12 --lanes 34</code> (iverilog),
+    <code>apio report</code> (nextpnr placement + timing),
+    <code>soc.bandwidth --rtl</code> (traffic counters in the design).
+    Full story: <code>docs/deployment.md</code>.
+  </p>
+
+  <div class="heroes">
+    <div class="hero"><div class="v ok">5 steps</div><div class="k">20 scrambled gates → exact adder (0.27 s at 25 MHz)</div></div>
+    <div class="hero"><div class="v">1.0000</div><div class="k">held for 7 further steps — and 1,024 in the model</div></div>
+    <div class="hero"><div class="v ok">1.0×</div><div class="k">circuit slowdown while repairing — parallel substrate, no shared resource</div></div>
+    <div class="hero"><div class="v">51 MB</div><div class="k">memory traffic per full 64-step repair; 90% is the weight stream</div></div>
+  </div>
+
+  <h2>Repair, step by step, on the RTL</h2>
+  <p class="lede">Damage at step 0: 20 hidden gates scrambled, 7.6% of the circuit.
+     Accuracy is the exact Boolean function of the live configuration bits, over all 256 patterns.</p>
+  <div class="card"><div class="pad">
+    <svg id="chart" width="100%" height="240" viewBox="0 0 720 240" role="img"
+         aria-label="Hard accuracy per repair step: 0.735 damaged, exact from step 5 onward"></svg>
+  </div></div>
+  <div class="card">
+    <table id="steps"><thead><tr>
+      <th>step</th><th>accuracy</th><th>wrong bits / 1,280</th><th>RTL vs integer model</th>
+    </tr></thead><tbody></tbody></table>
+  </div>
+
+  <h2>What deployment costs</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th>measure</th><th>value</th><th>context</th></tr></thead>
+      <tbody>
+        <tr><td>policy step</td><td>1,324,133 cycles</td><td>MAC 720k · norm 165k · gather 271k · rest 168k</td></tr>
+        <tr><td>substrate sweep (256 patterns)</td><td>261 cycles</td><td>parallel fabric; one addition per clock, no memory traffic</td></tr>
+        <tr><td>fault → exact repair</td><td>0.27 s</td><td>5 steps, measured above</td></tr>
+        <tr><td>full 64-step schedule</td><td>3.4 s</td><td>at the board's 25 MHz</td></tr>
+        <tr><td>logic</td><td>20,374 / 83,640</td><td>24% — includes the 264-gate parallel fabric</td></tr>
+        <tr><td>block RAM</td><td>132 / 208</td><td>63% — the rule and its state</td></tr>
+        <tr><td>multipliers</td><td>44 / 156</td><td>28%</td></tr>
+        <tr><td>F<sub>max</sub></td><td>37.1 MHz</td><td class="ok">meets the 25 MHz board clock</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>How much does error correction slow the circuit down?</h2>
+  <div class="card">
+    <table>
+      <thead><tr><th></th><th>healthy</th><th>while repairing</th><th>amortised</th></tr></thead>
+      <tbody>
+        <tr><td><b>parallel substrate (this build, <code>soc_qfab</code>)</b></td>
+            <td>1 add/clock · 25M add/s; a full self-check is 261 cycles</td>
+            <td class="ok">1.0× — no shared resource; repair writes config registers</td>
+            <td>the cost is the 0.27 s window in which outputs are wrong; repair closes it</td></tr>
+        <tr><td>interpreted substrate (<code>soc.qrtl --no-fabric</code>, the iCE40 concession)</td>
+            <td>521 cyc/add · 48k add/s</td>
+            <td>5,691 cyc/add — 10.9× slower</td>
+            <td>0.10% at one fault/hour</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">
+    Bandwidth split, from the design's own counters: the circuit moves 35.8 KB per
+    exhaustive evaluation (143 B per addition); error correction moves 815 KB per step —
+    90% of it re-reading the 72.8 KB weight stream once per tile — and 51 MB per
+    64-step repair. On this build's parallel substrate the circuit moves nothing — the
+    memory system <em>is</em> the error-correction subsystem, and its whole bill is
+    that 51 MB + 3.4 s per fault event.
+  </p>
+
+  <h2>The silicon, as placed</h2>
+  <p class="lede">Every cell of the design at its real nextpnr site on the LFE5U-85F die —
+     logic, block RAM (the rule and its state), multipliers, IO. Drag to pan, scroll to zoom,
+     hover a cell to see what it is.</p>
+  <div class="card">
+    <div class="pad" id="legend" style="display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;"></div>
+    <div class="board" id="board"><canvas id="die"></canvas><div class="tip" id="dietip"></div></div>
+  </div>
+  <p class="note">
+    Data: <code>nextpnr-ecp5 --write</code> on the built design — the same placement the
+    bitstream is packed from. For routing (“the cables”), <code>nextpnr-ecp5 --gui</code>
+    on <code>hw/qpolicy_ulx3s/_build/default/hardware.json</code> opens the placer’s own
+    explorer; its <code>--routed-svg</code> render also lives in <code>hw/qpolicy_ulx3s/</code>
+    (692&nbsp;MB — every wire on the die). <a href="../../viz/silicon_built.html">silicon_built.html</a>
+    is the companion per-tile view of the substrate.
+  </p>
+</div>
+
+<script src="placement.js"></script>
+<script id="metrics" type="application/json">{"episode":[[0,0.7352,339],[1,0.8539,187],[2,0.9242,97],[3,0.975,32],[4,0.9859,18],[5,1,0],[6,1,0],[7,1,0],[8,1,0],[9,1,0],[10,1,0],[11,1,0],[12,1,0]]}</script>
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById("metrics").textContent).episode;
+  var css = getComputedStyle(document.documentElement);
+  var accent = css.getPropertyValue("--accent").trim();
+  var lineSoft = css.getPropertyValue("--line-soft").trim();
+  var muted = css.getPropertyValue("--muted").trim();
+
+  // ---- table ----
+  var tb = document.querySelector("#steps tbody");
+  D.forEach(function (r) {
+    var tr = document.createElement("tr");
+    var exact = r[1] === 1;
+    tr.innerHTML = "<td>" + (r[0] === 0 ? "0 (damaged)" : r[0]) + "</td><td" +
+      (exact ? " class='ok'" : "") + ">" + r[1].toFixed(4) + "</td><td>" + r[2] +
+      "</td><td class='ok'>exact</td>";
+    tb.appendChild(tr);
+  });
+
+  // ---- chart: single series, hover crosshair ----
+  var svg = document.getElementById("chart");
+  var W = 720, H = 240, L = 52, R = 16, T = 14, B = 30;
+  var x = function (s) { return L + (W - L - R) * s / 12; };
+  var y = function (a) { return T + (H - T - B) * (1 - (a - 0.7) / 0.3); };
+  var ns = "http://www.w3.org/2000/svg";
+  function el(t, at) { var e = document.createElementNS(ns, t);
+    for (var k in at) e.setAttribute(k, at[k]); svg.appendChild(e); return e; }
+
+  [0.7, 0.8, 0.9, 1.0].forEach(function (g) {
+    el("line", {x1: L, x2: W - R, y1: y(g), y2: y(g), stroke: lineSoft, "stroke-width": 1});
+    el("text", {x: L - 8, y: y(g) + 4, "text-anchor": "end"}).textContent = g.toFixed(1);
+  });
+  [0, 2, 4, 6, 8, 10, 12].forEach(function (s) {
+    el("text", {x: x(s), y: H - 10, "text-anchor": "middle"}).textContent = s;
+  });
+  el("text", {x: L - 8, y: T - 2, "text-anchor": "end"}).textContent = "acc";
+
+  var path = D.map(function (r, i) { return (i ? "L" : "M") + x(r[0]) + " " + y(r[1]); }).join(" ");
+  el("path", {d: path, fill: "none", stroke: accent, "stroke-width": 2,
+              "stroke-linejoin": "round", "stroke-linecap": "round"});
+  D.forEach(function (r) {
+    el("circle", {cx: x(r[0]), cy: y(r[1]), r: 4, fill: accent});
+  });
+  // direct label at the two points that matter
+  el("text", {x: x(0) + 8, y: y(0.7352) + 14}).textContent = "damaged 0.735";
+  el("text", {x: x(5), y: y(1) - 10, "text-anchor": "middle"}).textContent = "exact from step 5";
+
+  // hover
+  var cross = el("line", {y1: T, y2: H - B, stroke: muted, "stroke-width": 1,
+                          "stroke-dasharray": "3 3", visibility: "hidden"});
+  var tip = document.createElement("div"); tip.className = "tip";
+  document.querySelector("#chart").closest(".pad").style.position = "relative";
+  document.querySelector("#chart").closest(".pad").appendChild(tip);
+  svg.addEventListener("mousemove", function (ev) {
+    var r = svg.getBoundingClientRect();
+    var sx = (ev.clientX - r.left) * W / r.width;
+    var s = Math.max(0, Math.min(12, Math.round((sx - L) / (W - L - R) * 12)));
+    cross.setAttribute("x1", x(s)); cross.setAttribute("x2", x(s));
+    cross.setAttribute("visibility", "visible");
+    var d = D[s];
+    tip.style.display = "block";
+    tip.style.left = (x(s) * r.width / W + 10) + "px";
+    tip.style.top = (y(d[1]) * r.height / H - 10) + "px";
+    tip.textContent = "step " + s + ": " + d[1].toFixed(4) + " · " + d[2] + " wrong bits";
+  });
+  svg.addEventListener("mouseleave", function () {
+    cross.setAttribute("visibility", "hidden"); tip.style.display = "none";
+  });
+
+  // ---- the die: canvas, pan/zoom, hover ----
+  var P = window.PLACEMENT;
+  var board = document.getElementById("board");
+  var cv = document.getElementById("die");
+  var dtip = document.getElementById("dietip");
+  if (!P) {
+    board.parentElement.previousElementSibling.textContent =
+      "placement.js not found -- regenerate with soc.qrtl / mk_placement";
+  } else {
+  var colors = { logic: accent, ff: "#8a63d2", bram: "#d97706", dsp: "#CF2C58",
+                 io: muted, clk: "#3b82f6" };
+  var leg = document.getElementById("legend");
+  P.kinds.forEach(function (k) {
+    if (!k.n) return;
+    var d = document.createElement("span");
+    d.innerHTML = "<span class='sw' style='background:" + colors[k.label] + "'></span>" +
+                  k.label + " · " + k.n.toLocaleString();
+    leg.appendChild(d);
+  });
+
+  var DW = P.dims[0], DH = P.dims[1];
+  var tx = 0, ty = 0, sc = 1, drag = null, dpr = window.devicePixelRatio || 1;
+
+  function fit() {
+    cv.width = board.clientWidth * dpr; cv.height = board.clientHeight * dpr;
+    cv.style.width = board.clientWidth + "px"; cv.style.height = board.clientHeight + "px";
+    sc = Math.min(board.clientWidth / (DW + 2), board.clientHeight / (DH + 2)) * 0.96;
+    tx = (board.clientWidth - DW * sc) / 2; ty = (board.clientHeight - DH * sc) / 2;
+    draw();
+  }
+  function draw() {
+    var g = cv.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, cv.width, cv.height);
+    // die outline + faint fabric grid
+    g.strokeStyle = lineSoft; g.lineWidth = 1;
+    g.strokeRect(tx, ty, DW * sc, DH * sc);
+    if (sc > 14) {
+      g.beginPath();
+      for (var gx = 0; gx <= DW; gx++) { g.moveTo(tx + gx * sc, ty); g.lineTo(tx + gx * sc, ty + DH * sc); }
+      for (var gy = 0; gy <= DH; gy++) { g.moveTo(tx, ty + gy * sc); g.lineTo(tx + DW * sc, ty + gy * sc); }
+      g.globalAlpha = 0.25; g.stroke(); g.globalAlpha = 1;
+    }
+    var cell = Math.max(Math.min(sc * 0.8, sc - 1), 1.5);
+    P.cells.forEach(function (c) {
+      g.fillStyle = colors[P.kinds[c[3]].label];
+      var ox = (c[2] % 2) * 0.5, oy = (c[2] >> 1) * 0.5;   // slice sub-site
+      g.fillRect(tx + (c[0] + ox * 0.9 + 0.05) * sc, ty + (c[1] + oy * 0.9 + 0.05) * sc,
+                 sc > 6 ? cell / 2 : cell, sc > 6 ? cell / 2 : cell);
+    });
+  }
+  function pick(mx, my) {
+    var best = null, bd = 64;
+    P.cells.forEach(function (c) {
+      var px = tx + (c[0] + 0.25) * sc, py = ty + (c[1] + 0.25) * sc;
+      var d = (px - mx) * (px - mx) + (py - my) * (py - my);
+      if (d < bd) { bd = d; best = c; }
+    });
+    return best;
+  }
+  board.addEventListener("wheel", function (ev) {
+    ev.preventDefault();
+    var r = board.getBoundingClientRect();
+    var mx = ev.clientX - r.left, my = ev.clientY - r.top;
+    var k = Math.exp(-ev.deltaY * 0.002);
+    k = Math.min(Math.max(sc * k, 1), 120) / sc;
+    tx = mx - (mx - tx) * k; ty = my - (my - ty) * k; sc *= k;
+    draw();
+  }, {passive: false});
+  board.addEventListener("mousedown", function (ev) {
+    drag = {x: ev.clientX - tx, y: ev.clientY - ty}; board.classList.add("grabbing");
+  });
+  window.addEventListener("mousemove", function (ev) {
+    if (drag) { tx = ev.clientX - drag.x; ty = ev.clientY - drag.y; draw(); return; }
+    var r = board.getBoundingClientRect();
+    if (ev.target !== cv) { dtip.style.display = "none"; return; }
+    var c = pick(ev.clientX - r.left, ev.clientY - r.top);
+    if (c) {
+      dtip.style.display = "block";
+      dtip.style.left = (ev.clientX - r.left + 14) + "px";
+      dtip.style.top = (ev.clientY - r.top + 6) + "px";
+      dtip.textContent = P.kinds[c[3]].label + " @ X" + c[0] + "/Y" + c[1] + " — " + c[4];
+    } else dtip.style.display = "none";
+  });
+  window.addEventListener("mouseup", function () { drag = null; board.classList.remove("grabbing"); });
+  window.addEventListener("resize", fit);
+  fit();
+  }
+})();
+</script>
