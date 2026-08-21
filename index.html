@@ -16,6 +16,16 @@ again. Everything on the FPGA itself, including the update rule.</p>
 <li><a href="projects/circuits.html">One page per circuit</a><span>The rule assembling adder2, adder4, gf4, mul3 and mul4 from random soft wires — no damage, no golden to restore: the message-passing episode over the real wiring, per-node messages, memory and error, the LUT contents, and where the error gate closes.</span></li>
 </ul>
 
+<h2>Three ways to a correct circuit</h2>
+<p>Before any error: how does a correct configuration come to exist on the fabric? The compiler
+(yosys/ABC) chooses the wiring and is exact for every circuit in seconds; gradient descent on a
+random wiring (bp) is exact up to 704 gates and stalls at 0.9988 on adder8; the local rule assembles
+the circuit online — exact on every random wiring bp solves, and on the compiler's sparse wiring only
+for the two small adders, because a minimal netlist leaves it no slack to re-solve.</p>
+<ul>
+<li><a href="projects/adder2/solutions.html">adder2</a> · <a href="projects/adder4/solutions.html">adder4</a> · <a href="projects/adder8/solutions.html">adder8</a> · <a href="projects/mul3/solutions.html">mul3</a> · <a href="projects/mul4/solutions.html">mul4</a> · <a href="projects/mul8/solutions.html">mul8</a> · <a href="projects/gf4/solutions.html">gf4</a><span>Per circuit: gates used, depth, configuration bits, exactness, what each configuration is made of (working gates, relays, constants, dead gates), cost in each method's own units, and the rule's assembly curve.</span></li>
+</ul>
+
 <h2>Operation under errors</h2>
 <p>All three fault models on one page per circuit. Soft errors: one scrambled LUT step by step,
 recovery against TMR / scrubbing / ECC / genetic repair, every method under a storm. Hard errors:

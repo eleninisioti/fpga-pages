@@ -1,0 +1,142 @@
+<!doctype html><meta charset="utf-8"><title>Three ways to a correct circuit</title>
+<style>
+:root{--bg:#0d1117;--card:#161b22;--line:#30363d;--ink:#e6edf3;--ink2:#8b949e;--acc:#58a6ff;--ok:#3fb950;--warn:#d29922;--bad:#f85149;--pink:#f778ba;--violet:#bc8cff}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:34px 18px 60px}
+.wrap{max-width:1040px;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 2px;font-weight:650}h2{font-size:1.05rem;margin:0 0 10px;font-weight:600}
+.sub{color:var(--ink2);margin:0 0 22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:16px 0}
+table{border-collapse:collapse;width:100%;font-size:.88rem}th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{color:var(--ink2);font-weight:600}td.name,th.name{text-align:left;white-space:normal}
+.note{color:var(--ink2);font-size:.9rem}.note b{color:var(--ink)}
+.pill{display:inline-block;padding:1px 8px;border-radius:10px;font-size:.8rem;font-weight:600}
+.yes{background:rgba(63,185,80,.18);color:var(--ok)}.no{background:rgba(248,81,73,.18);color:var(--bad)}
+.half{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:820px){.half{grid-template-columns:1fr}}
+svg{width:100%;height:auto;display:block}.scroll{overflow-x:auto}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:.82rem;color:var(--ink2);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+code{color:var(--ink);font-size:.85em}a{color:var(--acc)}
+</style>
+<div class="wrap">
+  <p class="note" style="margin:0 0 6px"><a href="../circuits.html">← circuits</a> · <a href="index.html">this circuit's growth page</a> · <a href="errors.html">under errors</a></p>
+  <h1 id="title"></h1>
+  <p class="sub" id="subtitle"></p>
+
+  <div class="card">
+    <h2>Who finds a correct circuit, on what, at what cost</h2>
+    <div class="scroll"><table id="tbl"></table></div>
+    <p class="note" id="note"></p>
+  </div>
+
+  <div class="half">
+    <div class="card">
+      <h2>What each configuration is made of</h2>
+      <svg id="struct" viewBox="0 0 460 260"></svg>
+      <div class="legend"><span><i style="background:var(--acc)"></i>working gates</span><span><i style="background:var(--violet)"></i>relays (pass one input through)</span><span><i style="background:var(--warn)"></i>constant gates</span><span><i style="background:#30363d"></i>dead (no path to an output)</span></div>
+      <p class="note">A gate counts as <i>working</i> when it is on a path to an output and is neither a constant nor a relay of one of its inputs. The compiler's padding is relays by construction; bp's random wiring leaves most of the substrate doing nothing useful.</p>
+    </div>
+    <div class="card">
+      <h2>The rule assembling the circuit online</h2>
+      <svg id="curve" viewBox="0 0 460 260"></svg>
+      <div class="legend" id="curvelegend"></div>
+      <p class="note" id="curvenote"></p>
+    </div>
+  </div>
+</div>
+
+<script type="application/json" id="blob">{"task":"mul8","nIn":16,"nOut":16,"patterns":65536,"solutions":[{"id":"compiler","method":"compiler","label":"compiler (yosys/ABC picks the wiring)","source":"runs/mul8_compiled_p3.pkl","substrate":{"gates":1324,"depth":9,"layers":[260,228,168,136,124,128,116,100,64],"configBits":21184,"arity":4},"acc":1.0,"bitErrors":0,"exact":true,"structure":{"constant":0,"relay":1133,"live":331,"working":191,"gates":1324},"netlist":{"cells":191,"depth":9,"livePerLayer":[65,57,42,34,31,32,29,25,16],"pad":3.0},"cost":{"seconds":12.7,"note":"wall time of `soc.compile`, toolchain start included"}},{"id":"gnn-compiled","method":"gnn","label":"the rule, on the compiler's wiring","source":"runs/solutions/mul8_grow_compiled.pkl","substrate":{"gates":1324,"depth":9,"layers":[260,228,168,136,124,128,116,100,64],"configBits":21184,"arity":4},"acc":0.7129688262939453,"bitErrors":300974,"exact":false,"structure":{"constant":2,"relay":9,"live":331,"working":326,"gates":1324},"rule":{"params":145186,"kb8":141.8,"dModel":96,"dMem":16,"dHidden":192,"nodeId":11,"nodeCode":64,"trainIters":6000,"trainDamage":0},"assembly":{"trials":8,"exactAt64":0.0,"accAt64":0.7126379013061523,"stepsToExact":null,"stepsToExactMax":null,"writesToExact":null,"accAt1024":0.5669964551925659,"exactAt1024":0.0,"writesPerStepTail":3.505859375,"curve64":[0.66369,0.70829,0.70982,0.71038,0.71171,0.71236,0.71236,0.71237,0.71246,0.71247,0.71229,0.71229,0.71214,0.71249,0.71249,0.71238,0.71229,0.71227,0.71226,0.71204,0.71216,0.71216,0.71216,0.71216,0.71216,0.71228,0.71228,0.71234,0.71237,0.71238,0.71238,0.71244,0.71244,0.71244,0.71245,0.71245,0.71247,0.71247,0.71247,0.71249,0.71249,0.71249,0.71249,0.71255,0.71255,0.71255,0.71256,0.71256,0.71251,0.7125,0.7125,0.7125,0.7125,0.7125,0.71252,0.71251,0.71253,0.71253,0.71253,0.71254,0.71254,0.71256,0.71256,0.71264],"curve1024":[0.66369,0.71246,0.71229,0.71216,0.71244,0.71249,0.71251,0.71253,0.71264,0.71253,0.71204,0.71159,0.71155,0.71109,0.71034,0.70973,0.70934,0.70894,0.70863,0.70865,0.70856,0.70847,0.70817,0.70712,0.70657,0.70555,0.70491,0.70461,0.70412,0.6987,0.69673,0.69581,0.69355,0.69309,0.69301,0.69286,0.69205,0.69182,0.69169,0.692,0.69243,0.69064,0.67272,0.6729,0.67231,0.66972,0.66751,0.66643,0.66623,0.66591,0.66516,0.66464,0.6649,0.66463,0.65679,0.65302,0.65224,0.64992,0.64794,0.6444,0.64311,0.63608,0.63195,0.62733,0.61714,0.61127,0.6086,0.61285,0.61776,0.61656,0.61385,0.61348,0.61327,0.61247,0.61233,0.61065,0.60883,0.60826,0.60815,0.60711,0.60355,0.60202,0.59656,0.59301,0.59134,0.59119,0.59037,0.5894,0.58866,0.58866,0.58845,0.58782,0.58447,0.58377,0.57928,0.57728,0.57652,0.57367,0.57105,0.5711,0.57073,0.57129,0.5721,0.57266,0.5726,0.5724,0.57238,0.57222,0.57159,0.57054,0.57066,0.57024,0.57027,0.57019,0.57107,0.57163,0.57355,0.57445,0.57535,0.57248,0.57178,0.57122,0.5711,0.5692,0.56715,0.56666,0.56695,0.56709],"distinct":8},"distanceFromBp":0.40134063444108764}],"note":"<b>The compiler is exact in 13 s</b> and uses 191 LUT4 cells at depth 9; the substrate it is deployed on carries 1324 gates because every layer is padded with spare gates for repair to route through (pad 3\u00d7). It chooses the wires, which is the whole difference. <b>Give the rule the compiler's wiring</b> and it reaches 0.7126 at 64 steps, 0 of 8 starts exact (rule of 145,186 parameters, 6,000 training episodes)."}</script>
+<script>
+const D = JSON.parse(document.getElementById('blob').textContent);
+const S = D.solutions;
+const NS = 'http://www.w3.org/2000/svg';
+const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const txt = (s, a) => { const e = el('text', a); e.textContent = s; return e; };
+const fmt = (v, n = 4) => v == null ? '—' : (+v).toFixed(n);
+const big = v => v == null ? '—' : (+v).toLocaleString();
+const COLOR = {compiler: 'var(--ok)', bp: 'var(--warn)', 'gnn-random': 'var(--acc)', 'gnn-compiled': 'var(--pink)'};
+
+document.getElementById('title').textContent = `${D.task}: three ways to a correct circuit`;
+document.getElementById('subtitle').textContent =
+  `${D.nIn} inputs, ${D.nOut} outputs, ${D.patterns.toLocaleString()} patterns checked exhaustively with binary gates. ` +
+  `No errors anywhere on this page — only how a correct configuration comes to exist on the fabric.`;
+
+function cost(s) {
+  if (s.method === 'compiler') return `${s.cost.seconds.toFixed(0)} s offline (yosys/ABC)`;
+  if (s.method === 'bp') {
+    const c = s.cost || {};
+    if (c.firstExactIteration != null) return `exact after ${big(c.firstExactIteration)} of ${big(c.iterations)} gradient iterations` +
+      (c.restarts > 1 ? ` (${c.restarts} restarts)` : '') + (c.polished ? ', discrete polish needed' : '') + ', offline';
+    if (c.iterations) return `${big(c.iterations)} gradient iterations × ${c.restarts || 1} restart(s), offline, not exact`;
+    return c.note ? 'gradient descent, offline — ' + c.note : 'gradient descent, offline';
+  }
+  const r = s.rule, a = s.assembly;
+  return `trained once (${big(r.trainIters)} episodes, ${big(r.params)} params, ${r.kb8} KB); then online: ` +
+    (a.stepsToExact != null ? `${a.stepsToExact.toFixed(1)} steps, ${a.writesToExact.toFixed(0)} LUT writes` : `not exact in 64 steps`);
+}
+function wiring(s) {
+  return s.method === 'compiler' ? 'compiler-chosen' : s.id === 'gnn-compiled' ? 'compiler-chosen' : 'random';
+}
+document.getElementById('tbl').innerHTML =
+  '<tr><th class="name">how</th><th>wiring</th><th>gates (working / total)</th><th>depth</th><th>config bits</th><th>exact</th><th>bit errors</th><th class="name">cost</th></tr>' +
+  S.map(s => `<tr><td class="name" style="color:${COLOR[s.id]}">${s.label}</td><td>${wiring(s)}</td>` +
+    `<td>${s.structure.working} / ${s.substrate.gates}${s.netlist ? ` <span class="note">(${s.netlist.cells} netlist cells)</span>` : ''}</td>` +
+    `<td>${s.substrate.depth}</td><td>${big(s.substrate.configBits)}</td>` +
+    `<td>${s.exact ? '<span class="pill yes">yes</span>' : `<span class="pill no">${fmt(s.acc, 4)}</span>`}</td>` +
+    `<td>${big(s.bitErrors)}</td><td class="name">${cost(s)}</td></tr>`).join('');
+document.getElementById('note').innerHTML = D.note || '';
+
+/* ---- structure: one stacked bar per solution, log-free absolute counts ---- */
+(function () {
+  const s = document.getElementById('struct');
+  const w = 460, h = 260, l = 150, r = 16, t = 14, b = 30;
+  const maxG = Math.max(...S.map(x => x.substrate.gates));
+  const X = v => l + v / maxG * (w - l - r);
+  const bh = Math.min(38, (h - t - b) / S.length - 10);
+  S.forEach((x, i) => {
+    const y = t + i * ((h - t - b) / S.length) + 4;
+    const st = x.structure, dead = st.gates - st.live;
+    const segs = [[st.working, 'var(--acc)'], [st.relay, 'var(--violet)'], [st.constant, 'var(--warn)'], [dead, '#30363d']];
+    let x0 = 0;
+    segs.forEach(([n, c]) => {
+      if (n > 0) s.appendChild(el('rect', {x: X(x0), y, width: Math.max(1, X(x0 + n) - X(x0)), height: bh, fill: c, rx: 2}));
+      x0 += n;
+    });
+    s.appendChild(txt(x.label.replace(/ \(.*$/, '').replace('gradient descent on a random wiring', 'bp, random wiring'),
+      {x: l - 8, y: y + bh / 2 + 4, fill: COLOR[x.id], 'font-size': 11, 'text-anchor': 'end'}));
+    s.appendChild(txt(`${st.working} working of ${st.gates}`, {x: X(st.gates) + 4 > w - 60 ? X(0) + 4 : X(st.gates) + 4,
+      y: y + bh / 2 + 4, fill: 'var(--ink2)', 'font-size': 10}));
+  });
+  s.appendChild(txt('gates', {x: (l + w - r) / 2, y: h - 8, fill: 'var(--ink2)', 'font-size': 11, 'text-anchor': 'middle'}));
+})();
+
+/* ---- assembly curves ---- */
+(function () {
+  const rules = S.filter(x => x.method === 'gnn');
+  const s = document.getElementById('curve'), leg = document.getElementById('curvelegend');
+  if (!rules.length) { document.getElementById('curvenote').textContent = 'No growth rule measured for this circuit yet.'; return; }
+  const w = 460, h = 260, l = 44, r = 14, t = 14, b = 34;
+  const lo = 0.5;
+  const X = i => l + i / 63 * (w - l - r), Y = v => t + (1 - (Math.max(lo, v) - lo) / (1 - lo)) * (h - t - b);
+  [0.5, 0.75, 0.9, 1].forEach(v => {
+    s.appendChild(el('line', {x1: l, y1: Y(v), x2: w - r, y2: Y(v), stroke: 'var(--line)'}));
+    s.appendChild(txt(v.toFixed(2), {x: l - 6, y: Y(v) + 4, fill: 'var(--ink2)', 'font-size': 10, 'text-anchor': 'end'}));
+  });
+  [1, 16, 32, 48, 64].forEach(st => s.appendChild(txt(String(st), {x: X(st - 1), y: h - b + 14, fill: 'var(--ink2)', 'font-size': 10, 'text-anchor': 'middle'})));
+  s.appendChild(txt('message-passing step (from random soft wires)', {x: (l + w - r) / 2, y: h - 6, fill: 'var(--ink2)', 'font-size': 11, 'text-anchor': 'middle'}));
+  s.appendChild(txt('output-bit accuracy', {x: 12, y: (t + h - b) / 2, fill: 'var(--ink2)', 'font-size': 11, 'text-anchor': 'middle', transform: `rotate(-90 12 ${(t + h - b) / 2})`}));
+  rules.forEach(x => {
+    let d = '';
+    x.assembly.curve64.forEach((v, i) => { d += (i ? 'L' : 'M') + X(i) + ' ' + Y(v); });
+    s.appendChild(el('path', {d, fill: 'none', stroke: COLOR[x.id], 'stroke-width': 2.4}));
+    leg.insertAdjacentHTML('beforeend', `<span><i style="background:${COLOR[x.id]}"></i>${x.label}</span>`);
+  });
+  document.getElementById('curvenote').innerHTML = rules.map(x => {
+    const a = x.assembly;
+    return `<b>${x.label}</b>: ${(100 * a.exactAt64).toFixed(0)}% of ${a.trials} starts exact by step 64` +
+      (a.stepsToExact != null ? ` (first at ${a.stepsToExact.toFixed(1)}, ${a.writesToExact.toFixed(0)} writes)` : '') +
+      `; at 1,024 steps ${fmt(a.accAt1024, 4)} with ${a.writesPerStepTail.toFixed(2)} writes/step` +
+      (a.writesPerStepTail === 0 ? ' — a fixed point, the machinery is off' : '') +
+      `; ${a.distinct} distinct configurations from ${a.trials} starts.`;
+  }).join('<br>');
+})();
+</script>
