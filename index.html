@@ -34,6 +34,7 @@ wall past which the task no longer fits the free bits. Parametric drift: dose sh
 analog margin, no bit is ever wrong, scrubbing and ECC are structurally blind — pre-registered,
 predictions scored against the run.</p>
 <ul>
+<li><a href="errors/index.html">Errors: soft and hard, all circuits</a><span>One summary page: soft errors against TMR, scrubbing, ECC and the GA; hard errors against the climber, the GA and a compiler told which cells are dead; the rest of aging — dead routing, shorted outputs, marginal cells, slow gates — and faults arriving one at a time. The rule beats the compiler where the fault does not read back (shorted outputs) and where the circuit is too big to solve in time (adder4).</span></li>
 <li><a href="projects/adder2/errors.html">adder2 under errors</a><span>60 gates, the 898-parameter rule: repairs 40 scrambled gates exactly on the circuit it grew.</span></li>
 <li><a href="projects/adder4/errors.html">adder4 under errors</a><span>264 gates, the 63k-parameter rule against the storm knee the scale question cares about.</span></li>
 <li><a href="projects/mul3/errors.html">mul3 under errors</a><span>360 gates, the multiplier — where the host GA collapsed on soft errors and the fabric GA did not.</span></li>
