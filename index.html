@@ -11,6 +11,11 @@ meta-learned once offline. At deployment it runs forward passes only: when a cos
 LUT config bits, neighbouring gates negotiate a configuration that computes the target function
 again. Everything on the FPGA itself, including the update rule.</p>
 
+<h2>Try it</h2>
+<ul>
+<li><a href="demo/index.html">Self-repair, live</a><span>The trained rule running in your browser on a sketch of our board (ECP5-5G evaluation board): pick adder2, mul3 or adder4, choose an error model (scrambled LUTs, frozen cells, frozen LUTs, shorted outputs), break LUTs by clicking them, flip the DIP switches, and watch the circuit repair itself.</span></li>
+</ul>
+
 <h2>Operation without errors</h2>
 <ul>
 <li><a href="projects/circuits.html">One page per circuit</a><span>The rule assembling adder2, adder4, gf4, mul3 and mul4 from random soft wires — no damage, no golden to restore: the message-passing episode over the real wiring, per-node messages, memory and error, the LUT contents, and where the error gate closes.</span></li>
@@ -34,6 +39,7 @@ wall past which the task no longer fits the free bits. Parametric drift: dose sh
 analog margin, no bit is ever wrong, scrubbing and ECC are structurally blind — pre-registered,
 predictions scored against the run.</p>
 <ul>
+<li><a href="errors/hard-errors.html">Hard errors: who wins</a><span>The learned rule, a genetic algorithm and a compiler on the same damage draws: frozen cells, frozen gates and shorted outputs on adder2, mul3 and adder4, with the best method marked on every row.</span></li>
 <li><a href="errors/index.html">Errors: soft and hard, all circuits</a><span>One summary page: soft errors against TMR, scrubbing, ECC and the GA; hard errors against the climber, the GA and a compiler told which cells are dead; the rest of aging — dead routing, shorted outputs, marginal cells, slow gates — and faults arriving one at a time. The rule beats the compiler where the fault does not read back (shorted outputs) and where the circuit is too big to solve in time (adder4).</span></li>
 <li><a href="projects/adder2/errors.html">adder2 under errors</a><span>60 gates, the 898-parameter rule: repairs 40 scrambled gates exactly on the circuit it grew.</span></li>
 <li><a href="projects/adder4/errors.html">adder4 under errors</a><span>264 gates, the 63k-parameter rule against the storm knee the scale question cares about.</span></li>
