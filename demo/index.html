@@ -66,8 +66,13 @@ font-style:normal;background:var(--sunken);color:var(--muted)}
 .tl input{flex:1}
 .tl button{padding:2px 10px;font-size:12px;border-radius:6px}
 .tl.live button{opacity:.45}
-.hwline{margin:6px 4px 0;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
-.hwline b{color:var(--ink-2);font-weight:600}
+.hw{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:1px;background:var(--line);
+border:1px solid var(--line);border-radius:8px;overflow:hidden;margin:8px 0 2px}
+.hw div{background:var(--surface);padding:7px 9px}
+.hw b{display:block;font-size:14px;font-variant-numeric:tabular-nums}
+.hw span{color:var(--muted);font-size:11px}
+.hw.none{display:none}
+.wavehint{margin:2px 4px 8px}
 </style>
 </head>
 <body>
@@ -77,7 +82,7 @@ font-style:normal;background:var(--sunken);color:var(--muted)}
 <div class="app">
   <div class="stage">
     <canvas id="board" aria-label="The board: DIP switches, the FPGA with the circuit's LUTs, LEDs"></canvas>
-    <p class="hwline" id="hwline"></p>
+    <div class="hw" id="hw"></div>
     <div class="legend">
       <span><i style="background:#E8A33D"></i>LUT output 1</span>
       <span><i style="background:#2B323D"></i>LUT output 0</span>
@@ -86,6 +91,9 @@ font-style:normal;background:var(--sunken);color:var(--muted)}
       <span><i style="background:repeating-linear-gradient(45deg,#B04BD6 0 2px,transparent 2px 4px)"></i>shorted output</span>
       <span><i style="border:2px dashed #E8A33D"></i>scrambled</span>
     </div>
+    <canvas id="waves" aria-label="Signals at the pins across the input sweep"></canvas>
+    <p class="hint wavehint">Every input pattern, left to right: what the pins do while the
+      substrate checks itself. Shift-click a LUT to probe it here.</p>
     <canvas id="chart" aria-label="Accuracy over time"></canvas>
     <canvas id="cost" aria-label="LUT writes and rewires per step"></canvas>
     <div class="tl"><input id="timeline" type="range" min="0" max="0" value="0">
@@ -571,6 +579,7 @@ function syncTimeline() {
 let R, rand = mulberry32(12345);
 let st, dmg, scrambled, stepN, sinceEvent, writesSince, regrows, hist, lastWritten, ev, lastGate;
 let rewiresSince = 0, episode = null, repairs = [];
+let probes = [];                 // gates the viewer is watching, beyond the pins
 let playing = true, pattern = 0, layout = null, hover = -1, phase = "";
 
 function isAdder() { return R.task.startsWith("adder"); }
@@ -578,17 +587,25 @@ function outName(o) { return (isAdder() ? "s" : "p") + o; }
 function inName(i) { const h = R.nIn / 2; return i < h ? "a" + i : "b" + (i - h); }
 
 function hwSummary() {
-  const hw = DATA[R.task].hw, el = $("hwline");
+  const hw = DATA[R.task].hw, el = $("hw");
   $("siliconrow").style.display = hw ? "" : "none";
-  if (!hw) { el.textContent = ""; if ($("silicon").checked) $("silicon").checked = false; return; }
-  const u = hw.utilisation || {};
-  const lut = (u.TRELLIS_COMB || {}).used, ff = (u.TRELLIS_FF || {}).used;
-  const path = hw.timing.comboNs || hw.timing.criticalPathNs;
+  el.classList.toggle("none", !hw);
+  if (!hw) { el.innerHTML = ""; if ($("silicon").checked) $("silicon").checked = false; return; }
+  const u = hw.utilisation || {}, t = hw.timing || {};
+  const lut = (u.TRELLIS_COMB || {}).used || 0, ff = (u.TRELLIS_FF || {}).used || 0;
+  const avail = (u.TRELLIS_COMB || {}).available || 83640;
+  const path = t.comboNs || t.criticalPathNs;
   const sim = (hw.sims || []).find(x => x.label === "repaired") || {};
-  el.innerHTML = `<b>${hw.device}</b> · ${R.G} writable gates = `
-    + `<b>${(lut || 0).toLocaleString()}</b> LUT4 + <b>${(ff || 0).toLocaleString()}</b> flip-flops `
-    + `(${hw.cfgBits.toLocaleString()} configuration bits) · input to output <b>${path} ns</b>`
-    + (sim.patterns ? ` · routed netlist: <b>${sim.patterns - sim.errors}/${sim.patterns}</b> patterns after repair` : "");
+  const settle = sim.worstSettlePs ? (sim.worstSettlePs / 1000).toFixed(2) + " ns" : null;
+  const cell = (v, k) => `<div><b>${v}</b><span>${k}</span></div>`;
+  el.innerHTML =
+      cell(`${path} ns`, `input to output, placed and routed`)
+    + cell(`${t.logicNs ?? "–"} / ${t.routingNs ?? "–"} ns`, "of that: logic / routing")
+    + cell(lut.toLocaleString(), `LUT4 (${(100 * lut / avail).toFixed(1)}% of the part)`)
+    + cell(ff.toLocaleString(), `flip-flops = configuration bits`)
+    + cell(`${sim.patterns ? sim.patterns - sim.errors : "–"}/${sim.patterns || "–"}`,
+           `patterns on the routed netlist${settle ? ", settle " + settle : ""}`)
+    + cell(hw.device, "measured by yosys and nextpnr");
 }
 
 function loadTask(name) {
@@ -609,7 +626,7 @@ function boot(newChip) {
   scrambled = new Uint8Array(R.G);
   R.clamp(st.logits, dmg);
   stepN = 0; sinceEvent = 0; writesSince = 0; rewiresSince = 0; regrows = 0; hist = []; lastGate = 1;
-  episode = null; repairs = [];
+  episode = null; repairs = []; probes = [];
   lastWritten = new Uint8Array(R.G);
   ev = R.evaluate(st, dmg);
   phase = (newChip ? "New chip: no faults. " : "Powered on. ")
@@ -1023,6 +1040,69 @@ function drawChart() {
   g.stroke();
 }
 
+// A logic analyser on the pins: every input pattern the self-check drives, and
+// what each pin does. This is the same sweep the error channels are computed
+// from, so a wrong LED here is exactly what opens the error gate -- and it is
+// what you would see on the board with a probe on those pins.
+function drawWaves() {
+  const ch = $("waves"), g = ch.getContext("2d"), dpr = window.devicePixelRatio || 1;
+  const rows = R.nIn + R.nOut + probes.length;
+  const H = 18 * rows + 26;
+  ch.width = ch.parentElement.clientWidth * dpr - 20 * dpr;
+  ch.height = H * dpr; ch.style.height = H + "px";
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const W = ch.width / dpr;
+  const css = getComputedStyle(document.documentElement);
+  const ink = css.getPropertyValue("--muted").trim(), line = css.getPropertyValue("--line").trim();
+  g.clearRect(0, 0, W, H);
+
+  const L = 52, T = 16, Wp = W - L - 8, dx = Wp / R.B, hi = 4, lo = 13;
+  g.font = "10px ui-monospace,monospace"; g.textBaseline = "middle";
+  g.fillStyle = ink; g.textAlign = "left";
+  g.fillText(`input pattern 0 … ${R.B - 1}`, L, 7);
+  g.textAlign = "right";
+  g.fillText("wrong outputs marked", W - 8, 7);
+
+  const series = [];
+  for (let i = 0; i < R.nIn; i++)
+    series.push({ name: inName(i), get: p => (p >> i) & 1, col: "#5B8DEF" });
+  for (let o = 0; o < R.nOut; o++)
+    series.push({ name: outName(o), col: "#E8A33D",
+                  get: p => ev.vals[p * R.N + R.outNode[o]],
+                  want: p => R.yBit(p, o) });
+  for (const gidx of probes)
+    series.push({ name: "L" + gidx, col: "#3FC3C9",
+                  get: p => ev.vals[p * R.N + R.nIn + gidx] });
+
+  series.forEach((s_, r) => {
+    const y0 = T + r * 18;
+    g.fillStyle = ink; g.textAlign = "right";
+    g.fillText(s_.name, L - 6, y0 + 9);
+    g.strokeStyle = line; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(L, y0 + lo + 0.5); g.lineTo(L + Wp, y0 + lo + 0.5); g.stroke();
+    g.strokeStyle = s_.col; g.lineWidth = 1.6; g.beginPath();
+    let prev = null;
+    for (let p = 0; p < R.B; p++) {
+      const v = s_.get(p), x = L + p * dx, y = y0 + (v ? hi : lo);
+      if (prev !== null && prev !== v) { g.moveTo(x, y0 + (prev ? hi : lo)); g.lineTo(x, y); }
+      g.moveTo(x, y); g.lineTo(x + dx, y);
+      prev = v;
+    }
+    g.stroke();
+    if (s_.want) {                        // mark the patterns this output gets wrong
+      for (let p = 0; p < R.B; p++) {
+        if (s_.get(p) === s_.want(p)) continue;
+        g.fillStyle = "rgba(229,72,77,.22)";
+        g.fillRect(L + p * dx, y0 + 1, dx, 16);
+      }
+    }
+  });
+  // where the board's switches currently sit
+  g.strokeStyle = "rgba(63,195,201,.9)"; g.lineWidth = 1.5;
+  g.beginPath(); g.moveTo(L + pattern * dx + dx / 2, T - 4);
+  g.lineTo(L + pattern * dx + dx / 2, T + 18 * series.length - 4); g.stroke();
+}
+
 function drawCost() {
   const ch = $("cost"), g = ch.getContext("2d"), dpr = window.devicePixelRatio || 1;
   const W = ch.width / dpr, H = 132;
@@ -1085,7 +1165,7 @@ function refresh() {
   $("s-dmg").style.fontSize = parts.length > 1 ? "13px" : "";
   $("s-regrow").textContent = regrows;
   $("phase").textContent = phase;
-  syncTimeline(); draw(); drawChart(); drawCost(); drawRepairs();
+  syncTimeline(); draw(); drawWaves(); drawChart(); drawCost(); drawRepairs();
 }
 
 // ------------------------------------------------------------------ input
@@ -1106,6 +1186,13 @@ cv.addEventListener("mouseleave", () => { hover = -1; $("tip").style.display = "
 cv.addEventListener("click", e => {
   const h = hitTest(e);
   if (h.sw !== undefined) { pattern ^= 1 << h.sw; refresh(); return; }
+  if (h.lut !== undefined && e.shiftKey) {     // probe it, do not break it
+    const i = probes.indexOf(h.lut);
+    if (i >= 0) probes.splice(i, 1);
+    else if (probes.length < 8) probes.push(h.lut);
+    refresh();
+    return;
+  }
   if (h.lut !== undefined) {
     const kind = faultKind();
     if (!hitGate(h.lut, kind)) {
